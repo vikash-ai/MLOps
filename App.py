@@ -55,7 +55,7 @@ else:
 st.subheader('User Input features')
 st.write(input_df)
 
-load_clf = joblib.load(open('C:\\HMDA\\Model\\approval_pipeline.joblib', 'rb'))
+load_clf = joblib.load(open('https:\\github.com\\vikash-ai\\MLOps\\approval_pipeline.joblib', 'rb'))
 
 prediction = load_clf.predict(input_df)
 
