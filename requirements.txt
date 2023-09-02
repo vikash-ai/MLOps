@@ -11,3 +11,4 @@ scipy==1.10.0
 streamlit==1.25.0
 streamlit_shap
 altair
+seaborn
