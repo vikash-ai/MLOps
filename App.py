@@ -93,7 +93,7 @@ def tab2_content():
     @st.cache_data
     def load_model(pkl):
         return pickle.load(open(pkl, "rb"))
-    model = load_model("C:/HMDA/Model/approval_pipeline_tuned.pkl")
+    model = load_model("./approval_pipeline_tuned.pkl")
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
    # Apply the scaler to X_test
