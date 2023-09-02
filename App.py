@@ -11,6 +11,7 @@ from streamlit_shap import st_shap
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 import requests
 import joblib
 import pickle
@@ -67,7 +68,7 @@ Model predicts the probability of a customer loan application Approval using Ban
 
     st.subheader('User Input features')
     st.write(input_df)
-    with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
+    with open("C:/HMDA/Model/approval_pipeline_tuned.pkl", 'rb') as pfile:  
                 load_clf=pickle.load(pfile)
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
@@ -93,7 +94,7 @@ def tab2_content():
     @st.cache_data
     def load_model(pkl):
         return pickle.load(open(pkl, "rb"))
-    model = load_model("./approval_pipeline_tuned.pkl")
+    model = load_model("C:/HMDA/Model/approval_pipeline_tuned.pkl")
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
    # Apply the scaler to X_test
@@ -172,14 +173,81 @@ def tab3_content():
         axs[i].set_aspect('equal')
         axs[i].set_title(titles[i], loc='center', pad=20) 
     # Sidebar option to show/hide EDA
-    show_eda = st.sidebar.checkbox("Show EDA")
-    if show_eda:
-        st.header("Exploratory Data Analysis Pie Chart")
+    show_Loan_Population = st.sidebar.checkbox("Show Loan Population")
+    if show_Loan_Population:
+        st.header("Loan Population By Prohibited Basis Factor")
         st.pyplot(fig)
     else:
     # You can add other content to the main section of the app
-        st.write("Select 'Show EDA' to view the pie chart.")
+        st.write("Select Option to view the distribution plots")
+    
+    #APR distribution  
+    st.set_option('deprecation.showPyplotGlobalUse', False)
+    show_APR = st.sidebar.checkbox("Show APR Distribution")
+    if show_APR:
+        st.header("Loan Density By Prohibited Basis Factor")
+        #sns.set(style="whitegrid")
+        #plt.figure(figsize=(6, 4))
+        df_r = X1[(X1.derived_race=='White')|(X1.derived_race=='Black or African American') ]
+        sns.displot(data=df_r,x='interest_rate', hue='derived_race',kind='kde',fill=True,palette='tab10')
+        plt.title("Loan Density Plot For Black or African American")
+        plt.xlabel("APR")
+        plt.grid(False)
+        st.pyplot()
+        
+        df_r = X1[(X1.derived_race=='White')|(X1.derived_race=='Asian') ]
+        sns.displot(data=df_r,x='interest_rate', hue='derived_race',kind='kde',fill=True,palette='tab10')
+        plt.title("Loan Density Plot For Asian")
+        plt.xlabel("APR")
+        plt.grid(False)
+        st.pyplot()
+        
+        df_r = X1[(X1.derived_race=='White')|(X1.derived_race=='American Indian or Alaska Native') ]
+        sns.displot(data=df_r,x='interest_rate', hue='derived_race',kind='kde',fill=True,palette='tab10')
+        plt.title("Loan Density Plot For American Indian or Alaska Native")
+        plt.xlabel("APR")
+        plt.grid(False)
+        st.pyplot()
+        
+        df_r = X1[(X1.derived_race=='White')|(X1.derived_race=='Native Hawaiian or Other Pacific Islander') ]
+        sns.displot(data=df_r,x='interest_rate', hue='derived_race',kind='kde',fill=True,palette='tab10')
+        plt.title("Loan Density Plot For  Other Pacific Islander")
+        plt.xlabel("APR")
+        plt.grid(False)
+        st.pyplot()
+        
+        df_r = X1[(X1.derived_sex=='Male')|(X1.derived_sex=='Female') ]
+        sns.displot(data=df_r,x='interest_rate', hue='derived_sex',kind='kde',fill=True,palette='tab10')
+        plt.title("Loan Density Plot For Gender")
+        plt.xlabel("APR")
+        plt.grid(False)
+        st.pyplot()
+        
+        df_r = X1[(X1.applicant_age_above_62=='Yes')|(X1.applicant_age_above_62=='No') ]
+        sns.displot(data=df_r,x='interest_rate', hue='applicant_age_above_62',kind='kde',fill=True,palette='tab10')
+        plt.title("Loan Density Plot For Age Above 62")
+        plt.xlabel("APR")
+        plt.grid(False)
+        st.pyplot()
+        # Filter the data by each race class and create displots for APR within each class
+        # unique_races = X1['derived_race'].unique()
+        # for race in unique_races:
+        #     st.subheader(f"APR Distribution for Race: {race}")
+        #     race_data = X1[X1['derived_race'] == race]
+
+        #     # Create a displot for age
+        #     sns.set(style="whitegrid")
+        #     plt.figure(figsize=(8, 6))
+        #     sns.displot(data=race_data,x='interest_rate',kind='kde',fill=True)
+        #     #sns.histplot(data=race_data, x='interest_rate', kde=True, bins=10)
+        #     plt.xlabel("APR")
+        #     plt.ylabel("Frequency")
+        #     st.pyplot()
+    else:
+    # You can add other content to the main section of the app
+        st.stop()
 # Main app structure
+#sns.displot(data=X1,hue='applicant_age_above_62',x='interest_rate',kind='kde',fill=True)
 st.title("Fair Lending Analysis App")
 
 # Create tabs
