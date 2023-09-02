@@ -67,7 +67,7 @@ Model predicts the probability of a customer loan application Approval using Ban
 
     st.subheader('User Input features')
     st.write(input_df)
-    with open("./MLOps/blob/main/approval_pipeline_tuned.pkl", 'rb') as pfile:  
+    with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
                 load_clf=pickle.load(pfile)
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
