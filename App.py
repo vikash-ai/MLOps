@@ -80,7 +80,7 @@ Model predicts the probability of a customer loan application Approval using his
     st.subheader('User Input features')
     st.dataframe(input_df, hide_index=True)
     #st.write(input_df.reset_index(drop=True))
-    with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
+    with open("C:/HMDA/Model/approval_pipeline_tuned.pkl", 'rb') as pfile:  
                 load_clf=pickle.load(pfile)
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
@@ -115,7 +115,7 @@ def tab2_content():
     #@st.cache_data
     def load_model(pkl):
         return pickle.load(open(pkl, "rb"))
-    model = load_model("./approval_pipeline_tuned.pkl")
+    model = load_model("C:/HMDA/Model/approval_pipeline_tuned.pkl")
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
    # Apply the scaler to X_test
@@ -183,20 +183,43 @@ def tab3_content():
         #take smaller sample to run the shap value analysis 
     else:
         st.stop()
-    # Main content for Tab 3
-    #st.write(X1.sample(3))
+    
     st.dataframe(X1.sample(5), hide_index=True)
-    fig, axs = plt.subplots(1, 3, figsize=(15, 10))
-    columns = ['derived_sex', 'derived_race', 'applicant_age_above_62']
-    titles = ['Gender Distribution', 'Race Distribution', 'Age Above 62']
-    for i, col in enumerate(columns):
-        count_df = X1.groupby(col).size().reset_index(name='Count')
-        #count_df = count_df.rename(columns={'derived_sex': 'Count'})
-        total_count = count_df['Count'].sum()
-        count_df['Percentage'] = count_df['Count'] / total_count * 100
-        axs[i].pie(count_df['Percentage'], labels=count_df[col], autopct='%1.1f%%', shadow=False, startangle=0)
-        axs[i].set_aspect('equal')
-        axs[i].set_title(titles[i], loc='center', pad=20) 
+    fig, axs = plt.subplots(1, 3, figsize=(20, 10))
+    X11 = X1[(X1.derived_sex=='Male')|(X1.derived_sex=='Female') ]
+    count_df = X11.groupby('derived_sex').size().reset_index(name='Count')
+    total_count = count_df['Count'].sum()
+    count_df['Percentage'] = count_df['Count'] / total_count * 100
+    axs[0].pie(count_df['Percentage'], labels=count_df['derived_sex'], autopct='%1.1f%%', shadow=False, startangle=0)
+    axs[0].set_aspect('equal')
+    axs[0].set_title('Gender Distribution', loc='center', pad=20)
+    
+    X11 = X1[(X1.derived_race=='White')|(X1.derived_race=='Black or African American')|(X1.derived_race=='Asian')
+             |(X1.derived_race=='American Indian or Alaska Native')|(X1.derived_race=='Native Hawaiian or Other Pacific Islander')]
+    count_df = X11.groupby('derived_race').size().reset_index(name='Count')
+    total_count = count_df['Count'].sum()
+    count_df['Percentage'] = count_df['Count'] / total_count * 100
+    axs[1].pie(count_df['Percentage'], labels=count_df['derived_race'], autopct='%1.1f%%', shadow=False, startangle=0)
+    axs[1].set_aspect('equal')
+    axs[1].set_title('Race Distribution', loc='center', pad=20)
+    
+    X11 = X1[(X1.applicant_age_above_62=='Yes')|(X1.applicant_age_above_62=='No') ]
+    count_df = X11.groupby('applicant_age_above_62').size().reset_index(name='Count')
+    total_count = count_df['Count'].sum()
+    count_df['Percentage'] = count_df['Count'] / total_count * 100
+    axs[2].pie(count_df['Percentage'], labels=count_df['applicant_age_above_62'], autopct='%1.1f%%', shadow=False, startangle=0)
+    axs[2].set_aspect('equal')
+    axs[2].set_title('Age Above 62', loc='center', pad=20)
+    # columns = ['derived_sex', 'derived_race', 'applicant_age_above_62']
+    # titles = ['Gender Distribution', 'Race Distribution', 'Age Above 62']
+    # for i, col in enumerate(columns):
+    #     count_df = X1.groupby(col).size().reset_index(name='Count')
+    #     #count_df = count_df.rename(columns={'derived_sex': 'Count'})
+    #     total_count = count_df['Count'].sum()
+    #     count_df['Percentage'] = count_df['Count'] / total_count * 100
+    #     axs[i].pie(count_df['Percentage'], labels=count_df[col], autopct='%1.1f%%', shadow=False, startangle=0)
+    #     axs[i].set_aspect('equal')
+    #     axs[i].set_title(titles[i], loc='center', pad=20) 
     # Sidebar option to show/hide EDA
     show_Loan_Population = st.sidebar.checkbox("Show Loan Population")
     if show_Loan_Population:
