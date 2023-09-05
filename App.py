@@ -80,7 +80,7 @@ Model predicts the probability of a customer loan application Approval using his
     st.subheader('User Input features')
     st.dataframe(input_df, hide_index=True)
     #st.write(input_df.reset_index(drop=True))
-    with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
+    with open("C:/HMDA/Model/approval_pipeline_tuned.pkl", 'rb') as pfile:  
                 load_clf=pickle.load(pfile)
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
@@ -96,7 +96,16 @@ Model predicts the probability of a customer loan application Approval using his
 
     st.subheader('Prediction Probability')
     st.write(prediction_proba)
-
+    
+    final_estimator = load_clf.named_steps['RF_tuned']
+   # Apply the scaler to X_test
+    encoder = load_clf.named_steps['categorical_encoder']
+    X_encoder = encoder.transform(input_df)
+    explainer = shap.Explainer(final_estimator)
+    shap_values = explainer.shap_values(X_encoder)
+    st.title("Explanation for Model Prediction")
+    st_shap(shap.force_plot(explainer.expected_value[1], shap_values[1], X_encoder), height=350)
+    
 def tab2_content():
     session_state.uploaded_file_tab1 = None
     session_state.uploaded_file_tab3 = None
@@ -106,7 +115,7 @@ def tab2_content():
     #@st.cache_data
     def load_model(pkl):
         return pickle.load(open(pkl, "rb"))
-    model = load_model("./approval_pipeline_tuned.pkl")
+    model = load_model("C:/HMDA/Model/approval_pipeline_tuned.pkl")
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
    # Apply the scaler to X_test
