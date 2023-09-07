@@ -167,7 +167,7 @@ def tab3_content():
     # Sidebar content for Tab 3
     session_state.uploaded_file_tab1 = None
     session_state.uploaded_file_tab2 = None
-    uploaded_file2 = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key="uploaded_file2")
+    uploaded_file2 = st.file_uploader("Upload your input CSV file", type=["csv"], key="uploaded_file2")
     if uploaded_file2 is not None:
         session_state.uploaded_file_tab3 = uploaded_file2
         session_state.uploaded_file_tab2 = None
@@ -221,7 +221,7 @@ def tab3_content():
     #     axs[i].set_aspect('equal')
     #     axs[i].set_title(titles[i], loc='center', pad=20) 
     # Sidebar option to show/hide EDA
-    show_Loan_Population = st.sidebar.checkbox("Show Loan Population")
+    show_Loan_Population = st.checkbox("Show Loan Population")
     if show_Loan_Population:
         st.header("Loan Population By Prohibited Basis Factor")
         st.pyplot(fig)
@@ -231,7 +231,7 @@ def tab3_content():
     
     #APR distribution  
     #st.set_option('deprecation.showPyplotGlobalUse', False)
-    show_APR = st.sidebar.checkbox("Show APR Distribution")
+    show_APR = st.checkbox("Show APR Distribution")
     if show_APR:
         st.header("Loan Density By Prohibited Basis Factor")
         fig, axes = plt.subplots(1, 2, figsize=(20, 10))
