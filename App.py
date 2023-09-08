@@ -358,14 +358,14 @@ def tab3_content():
 st.title("Fair Lending Analysis App")
 
 # Create tabs
-tabs = ["ML Model", "Model Explability", "Fair Lending Diaganosis"]
+tabs = ["Credit Risk Assesment - Individual Loan", "Credit Risk Assesment - Batch Upload", "Fair Lending - Early Warning"]
 selected_tab = st.radio("Select a tab:", tabs, format_func=lambda x: x)
 
 # Display content based on selected tab
 
-if selected_tab == "ML Model":
+if selected_tab == "Credit Risk Assesment - Individual Loan":
     tab1_content()
-elif selected_tab == "Model Explability":
+elif selected_tab == "Credit Risk Assesment - Batch Upload":
     tab2_content()
 else:
     tab3_content()
