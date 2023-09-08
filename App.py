@@ -159,7 +159,7 @@ def tab2_content():
     explainer = shap.TreeExplainer(final_estimator)
     shap_values = explainer.shap_values(X_encoder)
     #st_shap(shap.summary_plot(shap_values, X_encoder.iloc[0:100,:]))
-    st_shap(shap.summary_plot(shap_values[10], X_encoder.iloc[0:10,:]))
+    st_shap(shap.summary_plot(shap_values[1], X_encoder))
     "### Feature importance - Application Number"
     feature = st.selectbox("Choose Application Number", X.index.values)
     f"###### Application No. {feature} selected "
