@@ -39,10 +39,11 @@ def tab1_content():
 # Model Inference by Loan Id
 
 Model predicts the probability of a customer loan application Approval using historical application data
+Start by entering the loan attributes in the left side panel:
 
     """)
     #uploaded_file = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"])
-    st.sidebar.write("Input your loan application below")
+    st.sidebar.write("Input your loan application details")
     # if uploaded_file is not None:
     #     session_state.uploaded_file_tab1 = uploaded_file
     #     input_df1 = pd.read_csv(uploaded_file)
