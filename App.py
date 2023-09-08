@@ -155,14 +155,14 @@ def tab2_content():
     #with st.echo():
     explainer = shap.Explainer(final_estimator,X_encoder)
     shap_values = explainer(X_encoder)   
-    "### Feature importance"
+    "### Feature importance - Batch"
     explainer = shap.TreeExplainer(final_estimator)
     shap_values = explainer.shap_values(X_encoder)
     #st_shap(shap.summary_plot(shap_values, X_encoder))
     st_shap(shap.summary_plot(shap_values[1], X_encoder))
-    "#### Explanation For Loan Approval"
+    "### Feature importance - Application Number"
     feature = st.selectbox("Choose Application Number", X.index.values)
-    f"# Application No. {feature} selected "
+    f"###### Application No. {feature} selected "
     st_shap(shap.force_plot(explainer.expected_value[0], shap_values[0][feature], X_encoder.iloc[feature]), height=350)
 
 def tab3_content():
