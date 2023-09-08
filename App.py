@@ -129,7 +129,7 @@ def tab2_content():
         X1 = input_df1[['applicant_credit_score_type','debt_to_income_ratio','loan_amount','property_value','income','loan_purpose', 'loan_term']]
         X1['loan_purpose'] = X1['loan_purpose'].astype('O')
         #take smaller sample to run the shap value analysis
-        X2 = shap.sample(X1, 100)
+        X2 = shap.sample(X1, 500)
 # Reset index of the subset DataFrame
         X = X2.reset_index(drop=True) 
     else:
@@ -159,7 +159,7 @@ def tab2_content():
     explainer = shap.TreeExplainer(final_estimator)
     shap_values = explainer.shap_values(X_encoder)
     #st_shap(shap.summary_plot(shap_values, X_encoder))
-    st_shap(shap.summary_plot(shap_values[1], X_encoder))
+    st_shap(shap.summary_plot(shap_values, X_encoder))
     "### Feature importance - Application Number"
     feature = st.selectbox("Choose Application Number", X.index.values)
     f"###### Application No. {feature} selected "
