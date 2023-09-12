@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Aug 11 16:33:59 2023
-
-@author: vksch
-"""
-
 import streamlit as st
 import streamlit.components.v1 as components
 from streamlit_shap import st_shap
@@ -17,7 +10,10 @@ import joblib
 import pickle
 import io
 import shap
-# import altair as alt
+import folium
+from streamlit_folium import st_folium
+import geopandas as gpd
+
 
 # Define a custom SessionState class
 class SessionState:
@@ -81,7 +77,7 @@ Start by entering the loan attributes in the left side panel:
     st.subheader('User Input features')
     st.dataframe(input_df, hide_index=True)
     #st.write(input_df.reset_index(drop=True))
-    with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
+    with open("C:/HMDA/Model/approval_pipeline_tuned.pkl", 'rb') as pfile:  
                 load_clf=pickle.load(pfile)
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
@@ -116,7 +112,7 @@ def tab2_content():
     #@st.cache_data
     def load_model(pkl):
         return pickle.load(open(pkl, "rb"))
-    model = load_model("./approval_pipeline_tuned.pkl")
+    model = load_model("C:/HMDA/Model/approval_pipeline_tuned.pkl")
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
    # Apply the scaler to X_test
@@ -152,6 +148,13 @@ def tab2_content():
             st.dataframe(X1.describe())
             #st.dataframe(X.head(nobs).describe())
         X_encoder = encoder.transform(X)
+    with st.expander("Model prediction and summary"):
+        prediction1 = model.predict(X1)
+        X1['prediction'] = prediction1
+        st.dataframe(X1)
+        tot_approval = X1['prediction'].sum()
+        tot_app = X1['prediction'].size
+        f"######  {tot_approval} Application Approved, out of {tot_app} total application"
     #with st.echo():
     explainer = shap.Explainer(final_estimator,X_encoder)
     shap_values = explainer(X_encoder)   
@@ -229,7 +232,8 @@ def tab3_content():
         st.pyplot(fig)
     else:
     # You can add other content to the main section of the app
-        st.write("Select Option to view the distribution plots")
+        # st.write("Select Option to view the distribution plots")
+        st.stop()
     
     #APR distribution  
     #st.set_option('deprecation.showPyplotGlobalUse', False)
@@ -244,12 +248,16 @@ def tab3_content():
         axes[0].set_xlabel("APR")
         axes[0].grid(False)
         DIR_ratio = 0.12  # Replace this with your actual DIR ratio
-        bar_labels = ['White', 'Black or African American']  # Labels for the bars
-        bar_heights = [1.0, DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
-
-        axes[1].bar(bar_labels, bar_heights, color=['blue', 'red'])
+        # bar_labels = ['White', 'Black or African American']  # Labels for the bars
+        # bar_heights = [1.0, DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
+        bar_labels = ['Black or African American']  # Labels for the bars
+        bar_heights = [DIR_ratio]
+        # axes[1].bar(bar_labels, bar_heights, color=['blue', 'red'])
+        axes[1].bar(bar_labels, bar_heights, color=['blue'])
         axes[1].set_title("Disparate Impact Ratio")
         axes[1].set_ylabel("DIR Ratio")
+        axes[1].set_ylim(0.0, 3.0)
+        axes[1].axhline(y=1.0, color='red', linestyle='--')
         axes[1].grid(False)
         st.pyplot(fig)
         
@@ -261,12 +269,14 @@ def tab3_content():
         axes[0].set_xlabel("APR")
         axes[0].grid(False)
         DIR_ratio = 0.13  # Replace this with your actual DIR ratio
-        bar_labels = ['White', 'Asian']  # Labels for the bars
-        bar_heights = [1.0, DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
+        bar_labels = ['Asian']  # Labels for the bars
+        bar_heights = [DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
 
-        axes[1].bar(bar_labels, bar_heights, color=['blue', 'red'])
+        axes[1].bar(bar_labels, bar_heights, color=['blue'])
         axes[1].set_title("Disparate Impact Ratio")
         axes[1].set_ylabel("DIR Ratio")
+        axes[1].set_ylim(0.0, 3.0)
+        axes[1].axhline(y=1.0, color='red', linestyle='--')
         axes[1].grid(False)
         st.pyplot(fig1)
         
@@ -278,12 +288,14 @@ def tab3_content():
         axes[0].set_xlabel("APR")
         axes[0].grid(False)
         DIR_ratio = 0.02  # Replace this with your actual DIR ratio
-        bar_labels = ['White', 'American Indian or Alaska Native']  # Labels for the bars
-        bar_heights = [1.0, DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
+        bar_labels = ['American Indian or Alaska Native']  # Labels for the bars
+        bar_heights = [DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
 
-        axes[1].bar(bar_labels, bar_heights, color=['blue', 'red'])
+        axes[1].bar(bar_labels, bar_heights, color=['blue'])
         axes[1].set_title("Disparate Impact Ratio")
         axes[1].set_ylabel("DIR Ratio")
+        axes[1].set_ylim(0.0, 3.0)
+        axes[1].axhline(y=1.0, color='red', linestyle='--')
         axes[1].grid(False)
         st.pyplot(fig2)
         
@@ -295,12 +307,14 @@ def tab3_content():
         axes[0].set_xlabel("APR")
         axes[0].grid(False)
         DIR_ratio = 0.01  # Replace this with your actual DIR ratio
-        bar_labels = ['White', 'Native Hawaiian or Other Pacific Islander']  # Labels for the bars
-        bar_heights = [1.0, DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
+        bar_labels = ['Native Hawaiian or Other Pacific Islander']  # Labels for the bars
+        bar_heights = [DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
 
-        axes[1].bar(bar_labels, bar_heights, color=['blue', 'red'])
+        axes[1].bar(bar_labels, bar_heights, color=['blue'])
         axes[1].set_title("Disparate Impact Ratio")
         axes[1].set_ylabel("DIR Ratio")
+        axes[1].set_ylim(0.0, 3.0)
+        axes[1].axhline(y=1.0, color='red', linestyle='--')
         axes[1].grid(False)
         st.pyplot(fig3)
         
@@ -312,12 +326,14 @@ def tab3_content():
         axes[0].set_xlabel("APR")
         axes[0].grid(False)
         DIR_ratio = 0.30  # Replace this with your actual DIR ratio
-        bar_labels = ['Male', 'Female']  # Labels for the bars
-        bar_heights = [1.0, DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
+        bar_labels = ['Female']  # Labels for the bars
+        bar_heights = [DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
 
-        axes[1].bar(bar_labels, bar_heights, color=['blue', 'red'])
+        axes[1].bar(bar_labels, bar_heights, color=['blue'])
         axes[1].set_title("Disparate Impact Ratio")
         axes[1].set_ylabel("DIR Ratio")
+        axes[1].set_ylim(0.0, 3.0)
+        axes[1].axhline(y=1.0, color='red', linestyle='--')
         axes[1].grid(False)
         st.pyplot(fig4)
         
@@ -329,12 +345,14 @@ def tab3_content():
         axes[0].set_xlabel("APR")
         axes[0].grid(False)
         DIR_ratio = 0.30  # Replace this with your actual DIR ratio
-        bar_labels = ['No', 'Yes']  # Labels for the bars
-        bar_heights = [1.0, DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
+        bar_labels = ['Yes']  # Labels for the bars
+        bar_heights = [DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
 
-        axes[1].bar(bar_labels, bar_heights, color=['blue', 'red'])
+        axes[1].bar(bar_labels, bar_heights, color=['blue'])
         axes[1].set_title("Disparate Impact Ratio")
         axes[1].set_ylabel("DIR Ratio")
+        axes[1].set_ylim(0.0, 3.0)
+        axes[1].axhline(y=1.0, color='red', linestyle='--')
         axes[1].grid(False)
         
         st.pyplot(fig5)
@@ -355,6 +373,36 @@ def tab3_content():
     else:
     # You can add other content to the main section of the app
         st.stop()
+        
+    show_map = st.checkbox("Show Minority Group Distribution")
+    if show_map:
+        st.subheader("Redlining By Census tract")
+        # Load the shapefile for Illinois
+        census_tract_shapefile = "C:/Users/vksch/Downloads/tl_2018_17_tract/tl_2018_17_tract.shp"
+        il_shapefile = gpd.read_file(census_tract_shapefile)
+        il_shapefile1 = pd.DataFrame(il_shapefile)
+        il_shapefile1.GEOID = pd.to_numeric(il_shapefile1['GEOID'], errors='coerce')
+        #il_shapefile1['geometry'] = il_shapefile1['geometry'].astype('O')
+        HMDA_IL = input_df1[['census_tract','tract_minority_population_percent']]
+        merged_data1 = HMDA_IL.merge(il_shapefile1, left_on="census_tract", right_on="GEOID", how="left")
+        merged_data = merged_data1.sample(n=1000,random_state=25)
+        #st.table(merged_data)
+        #st.write(merged_data.shape)
+        il_m = folium.Map(location=[39.8, -89.7])
+        for idx, row in merged_data.iterrows():
+            coordinates = row['geometry'].exterior.coords.xy  # Extract the coordinates
+            polygon_coords = list(zip(coordinates[1], coordinates[0]))
+            folium.Polygon(
+                locations=polygon_coords,  # Boundary coordinates for the zip code
+                color='red',  # Customize the color based on minority percentage
+                fill_color=row['tract_minority_population_percent'],  # Color-coded fill
+                fill_opacity=0.7,
+                tooltip=f"Census tract: {row['census_tract']}, Minority %: {row['tract_minority_population_percent']}"
+            ).add_to(il_m)
+        st_folium(il_m, width=725)
+    else:
+    # You can add other content to the main section of the app
+        st.stop()    
 # Main app structure
 #sns.displot(data=X1,hue='applicant_age_above_62',x='interest_rate',kind='kde',fill=True)
 st.title("Fair Lending Analysis App")
