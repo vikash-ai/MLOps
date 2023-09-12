@@ -12,3 +12,6 @@ streamlit==1.25.0
 streamlit_shap
 altair
 seaborn
+geopandas
+folium
+streamlit-folium
