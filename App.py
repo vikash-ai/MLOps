@@ -77,7 +77,7 @@ Start by entering the loan attributes in the left side panel:
     st.subheader('User Input features')
     st.dataframe(input_df, hide_index=True)
     #st.write(input_df.reset_index(drop=True))
-    with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
+    with open("C:/HMDA/Model/approval_pipeline_tuned.pkl", 'rb') as pfile:  
                 load_clf=pickle.load(pfile)
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
@@ -112,7 +112,7 @@ def tab2_content():
     #@st.cache_data
     def load_model(pkl):
         return pickle.load(open(pkl, "rb"))
-    model = load_model("./approval_pipeline_tuned.pkl")
+    model = load_model("C:/HMDA/Model/approval_pipeline_tuned.pkl")
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
    # Apply the scaler to X_test
@@ -142,19 +142,38 @@ def tab2_content():
         st.dataframe(X.head(nobs))
     
         # Conditionally calculate summary statistics
-        if st.checkbox("Display summary statistics for visible sample?"):
+        if st.checkbox("Display summary statistics for uploaded batch file"):
             f"""Sample statistics based on uploaded Data:"""
             #f"""Sample statistics based on {nobs} observations:"""
             st.dataframe(X1.describe())
             #st.dataframe(X.head(nobs).describe())
         X_encoder = encoder.transform(X)
     with st.expander("Model prediction and summary"):
+        numeric_columns = X1.select_dtypes(include=[np.number])
+        categorical_columns = X1.select_dtypes(exclude=[np.number])
         prediction1 = model.predict(X1)
+        probability = model.predict_proba(X1)[:,1]
         X1['prediction'] = prediction1
-        st.dataframe(X1)
-        tot_approval = X1['prediction'].sum()
-        tot_app = X1['prediction'].size
-        f"######  {tot_approval} Application Approved, out of {tot_app} total application"
+        X1['probability'] = probability
+        numeric_means = X1.groupby("prediction")[numeric_columns.columns].mean()
+        categorical_modes = X1.groupby("prediction")[categorical_columns.columns].agg(lambda x: x.mode().iloc[0])
+        result = pd.concat([numeric_means, categorical_modes], axis=1)
+        result = result.reset_index()
+        st.dataframe(result, hide_index=True)
+        if st.checkbox("Choose Probability cutoff for application approval summary"):
+            if not X.empty:
+                score = st.slider(
+                    "Select Probability cutoff for application approval", 0.0, 1.0, value=0.5
+                )
+            else:
+                st.write("Choose Probability score")
+            #st.write(score)
+            X_cutoff = X1[X1['probability'] >= score]
+            X_cutoff['prediction'] = 1
+            st.dataframe(X_cutoff.describe())
+            tot_approval = X_cutoff['prediction'].sum()
+            tot_app = X1['prediction'].size
+            f"######  {tot_approval} Application Approved, out of {tot_app} total application"
     #with st.echo():
     explainer = shap.Explainer(final_estimator,X_encoder)
     shap_values = explainer(X_encoder)   
@@ -378,7 +397,7 @@ def tab3_content():
     if show_map:
         st.subheader("Redlining By Census tract")
         # Load the shapefile for Illinois
-        census_tract_shapefile = "./tl_2018_17_tract/tl_2018_17_tract.shp"
+        census_tract_shapefile = "C:/Users/vksch/Downloads/tl_2018_17_tract/tl_2018_17_tract.shp"
         il_shapefile = gpd.read_file(census_tract_shapefile)
         il_shapefile1 = pd.DataFrame(il_shapefile)
         il_shapefile1.GEOID = pd.to_numeric(il_shapefile1['GEOID'], errors='coerce')
@@ -396,7 +415,7 @@ def tab3_content():
                 locations=polygon_coords,  # Boundary coordinates for the zip code
                 color='red',  # Customize the color based on minority percentage
                 fill_color=row['tract_minority_population_percent'],  # Color-coded fill
-                fill_opacity=0.7,
+                fill_opacity=0.5,
                 tooltip=f"Census tract: {row['census_tract']}, Minority %: {row['tract_minority_population_percent']}"
             ).add_to(il_m)
         st_folium(il_m, width=725)
