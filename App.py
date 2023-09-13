@@ -174,6 +174,7 @@ def tab2_content():
             result = pd.merge(result, categorical_modes, on="prediction_updated")
             result = result.reset_index(drop=True)
             result = result.round(2)
+            st.write('(Numbers below are averages)')
             st.dataframe(result, hide_index=True)
             X_cutoff = X1[X1['prediction_updated'] == 1]
             X_cutoff1= X_cutoff.drop(['prediction','prediction_updated'], axis=1)
