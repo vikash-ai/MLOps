@@ -39,34 +39,27 @@ Start by entering the loan attributes in the left side panel:
 
     """)
     #uploaded_file = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"])
-    st.sidebar.write("Input your loan application details")
-    # if uploaded_file is not None:
-    #     session_state.uploaded_file_tab1 = uploaded_file
-    #     input_df1 = pd.read_csv(uploaded_file)
-    #     input_df = input_df1[['applicant_credit_score_type','debt_to_income_ratio','loan_amount','property_value','income','loan_purpose', 'loan_term']]
-    #     input_df['loan_purpose'] = input_df['loan_purpose'].astype('O')
-    # else:
+    st.sidebar.subheader("Input your loan application details")
+    
     input_df = pd.DataFrame()
     # def user_input():
 
     loan_amount = st.sidebar.slider('Loan Amount', 5000.0,500000.0, 1000.0)
-
-    loan_purpose = st.sidebar.selectbox('Loan Purpose',('1','2','4','31','32'))
-
     loan_term = st.sidebar.slider('Loan Term', 12,360, 12)
     property_value = st.sidebar.slider('Property value', 5000.0,50000000.0, 1000.0)
     income = st.sidebar.slider('Income', 0.0,20000.0, 100.0)
     debt_to_income_ratio = st.sidebar.selectbox('DTI',('<20%','20%-<30%','30%-<36%','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50%-60%','>60%'))
     applicant_credit_score_type = st.sidebar.selectbox('Credit Score',('1', '2','3','8','9'))
-    
+    #loan_purpose = st.sidebar.selectbox('Loan Purpose',('1','2','4','31','32'))
+    loan_purpose = st.sidebar.selectbox('Loan Purpose',('Home purchase','Home improvement','Other purpose','Refinancing','Cash-out refinancing'))
     data = {'Application No': 1001,
             'loan_amount':[loan_amount],
-            'loan_purpose':[loan_purpose],
             'loan_term':[loan_term],
             'property_value':[property_value],
             'income':[income],
             'debt_to_income_ratio':[debt_to_income_ratio],
             'applicant_credit_score_type':[applicant_credit_score_type],
+            'loan_purpose':[loan_purpose],
             }
     features = pd.DataFrame(data)
 
@@ -77,7 +70,7 @@ Start by entering the loan attributes in the left side panel:
     st.subheader('User Input features')
     st.dataframe(input_df, hide_index=True)
     #st.write(input_df.reset_index(drop=True))
-    with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
+    with open("C:/HMDA/Model/approval_pipeline_tuned.pkl", 'rb') as pfile:  
                 load_clf=pickle.load(pfile)
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
@@ -112,7 +105,7 @@ def tab2_content():
     #@st.cache_data
     def load_model(pkl):
         return pickle.load(open(pkl, "rb"))
-    model = load_model("./approval_pipeline_tuned.pkl")
+    model = load_model("C:/HMDA/Model/approval_pipeline_tuned.pkl")
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
    # Apply the scaler to X_test
@@ -242,21 +235,41 @@ def tab3_content():
     axs[2].pie(count_df['Percentage'], labels=count_df['applicant_age_above_62'], autopct='%1.1f%%', shadow=False, startangle=0)
     axs[2].set_aspect('equal')
     axs[2].set_title('Age Above 62', loc='center', pad=20)
-    # columns = ['derived_sex', 'derived_race', 'applicant_age_above_62']
-    # titles = ['Gender Distribution', 'Race Distribution', 'Age Above 62']
-    # for i, col in enumerate(columns):
-    #     count_df = X1.groupby(col).size().reset_index(name='Count')
-    #     #count_df = count_df.rename(columns={'derived_sex': 'Count'})
-    #     total_count = count_df['Count'].sum()
-    #     count_df['Percentage'] = count_df['Count'] / total_count * 100
-    #     axs[i].pie(count_df['Percentage'], labels=count_df[col], autopct='%1.1f%%', shadow=False, startangle=0)
-    #     axs[i].set_aspect('equal')
-    #     axs[i].set_title(titles[i], loc='center', pad=20) 
-    # Sidebar option to show/hide EDA
+    #pie chart for approved cases
+    fig11, axs = plt.subplots(1, 3, figsize=(20, 10))
+    X12 = X1[(X1.Derived_action == 'Approved')]
+    X11 = X12[(X12.derived_sex=='Male')|(X12.derived_sex=='Female') ]
+    count_df = X11.groupby('derived_sex').size().reset_index(name='Count')
+    total_count = count_df['Count'].sum()
+    count_df['Percentage'] = count_df['Count'] / total_count * 100
+    axs[0].pie(count_df['Percentage'], labels=count_df['derived_sex'], autopct='%1.1f%%', shadow=False, startangle=0)
+    axs[0].set_aspect('equal')
+    axs[0].set_title('Gender Distribution', loc='center', pad=20)
+    
+    X11 = X12[(X12.derived_race=='White')|(X12.derived_race=='Black or African American')|(X12.derived_race=='Asian')
+             |(X12.derived_race=='American Indian or Alaska Native')|(X12.derived_race=='Native Hawaiian or Other Pacific Islander')]
+    count_df = X11.groupby('derived_race').size().reset_index(name='Count')
+    total_count = count_df['Count'].sum()
+    count_df['Percentage'] = count_df['Count'] / total_count * 100
+    axs[1].pie(count_df['Percentage'], labels=count_df['derived_race'], autopct='%1.1f%%', shadow=False, startangle=0)
+    axs[1].set_aspect('equal')
+    axs[1].set_title('Race Distribution', loc='center', pad=20)
+    
+    X11 = X12[(X12.applicant_age_above_62=='Yes')|(X12.applicant_age_above_62=='No') ]
+    count_df = X11.groupby('applicant_age_above_62').size().reset_index(name='Count')
+    total_count = count_df['Count'].sum()
+    count_df['Percentage'] = count_df['Count'] / total_count * 100
+    axs[2].pie(count_df['Percentage'], labels=count_df['applicant_age_above_62'], autopct='%1.1f%%', shadow=False, startangle=0)
+    axs[2].set_aspect('equal')
+    axs[2].set_title('Age Above 62', loc='center', pad=20)
+    
+    
     show_Loan_Population = st.checkbox("Show Loan Population")
     if show_Loan_Population:
-        st.header("Loan Population By Prohibited Basis Factor")
+        st.header("Loan application Population By Prohibited Basis Factor")
         st.pyplot(fig)
+        st.header("Loan approved Population By Prohibited Basis Factor")
+        st.pyplot(fig11)
     else:
     # You can add other content to the main section of the app
         # st.write("Select Option to view the distribution plots")
@@ -274,13 +287,13 @@ def tab3_content():
         axes[0].set_title("Loan Density Plot For Black or African American")
         axes[0].set_xlabel("APR")
         axes[0].grid(False)
-        DIR_ratio = 0.12  # Replace this with your actual DIR ratio
+        DIR_ratio = 1.12  # Replace this with your actual DIR ratio
         # bar_labels = ['White', 'Black or African American']  # Labels for the bars
         # bar_heights = [1.0, DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
         bar_labels = ['Black or African American']  # Labels for the bars
         bar_heights = [DIR_ratio]
         # axes[1].bar(bar_labels, bar_heights, color=['blue', 'red'])
-        axes[1].bar(bar_labels, bar_heights, color=['blue'])
+        axes[1].bar(bar_labels, bar_heights, color=['red'])
         axes[1].set_title("Disparate Impact Ratio")
         axes[1].set_ylabel("DIR Ratio")
         axes[1].set_ylim(0.0, 3.0)
@@ -352,11 +365,11 @@ def tab3_content():
         axes[0].set_title("Loan Density Plot For Gender")
         axes[0].set_xlabel("APR")
         axes[0].grid(False)
-        DIR_ratio = 0.30  # Replace this with your actual DIR ratio
+        DIR_ratio = 0.93  # Replace this with your actual DIR ratio
         bar_labels = ['Female']  # Labels for the bars
         bar_heights = [DIR_ratio]  # Heights of the bars, where 1.0 represents no disparate impact
 
-        axes[1].bar(bar_labels, bar_heights, color=['blue'])
+        axes[1].bar(bar_labels, bar_heights, color=['red'])
         axes[1].set_title("Disparate Impact Ratio")
         axes[1].set_ylabel("DIR Ratio")
         axes[1].set_ylim(0.0, 3.0)
@@ -405,7 +418,7 @@ def tab3_content():
     if show_map:
         st.subheader("Redlining By Census tract")
         # Load the shapefile for Illinois
-        census_tract_shapefile = "./tl_2018_17_tract/tl_2018_17_tract.shp"
+        census_tract_shapefile = "C:/Users/vksch/Downloads/tl_2018_17_tract/tl_2018_17_tract.shp"
         il_shapefile = gpd.read_file(census_tract_shapefile)
         il_shapefile1 = pd.DataFrame(il_shapefile)
         il_shapefile1.GEOID = pd.to_numeric(il_shapefile1['GEOID'], errors='coerce')
@@ -419,11 +432,19 @@ def tab3_content():
         for idx, row in merged_data.iterrows():
             coordinates = row['geometry'].exterior.coords.xy  # Extract the coordinates
             polygon_coords = list(zip(coordinates[1], coordinates[0]))
+            # Check if the minority percentage is greater than 50%
+            if row['tract_minority_population_percent'] > 50:
+            # If greater than 50%, highlight in red
+                color = 'red'
+            else:
+            # Otherwise, use a different color (e.g., blue)
+                color = 'rgba(0, 0, 0, 0)'
             folium.Polygon(
                 locations=polygon_coords,  # Boundary coordinates for the zip code
-                color='red',  # Customize the color based on minority percentage
-                fill_color=row['tract_minority_population_percent'],  # Color-coded fill
-                fill_opacity=0.5,
+                color=color,  # Customize the color based on minority percentage
+                #fill_color=row['tract_minority_population_percent'],# Color-coded fill
+                fill_color=color,
+                fill_opacity=0.7,
                 tooltip=f"Census tract: {row['census_tract']}, Minority %: {row['tract_minority_population_percent']}"
             ).add_to(il_m)
         st_folium(il_m, width=725)
@@ -432,7 +453,7 @@ def tab3_content():
         st.stop()    
 # Main app structure
 #sns.displot(data=X1,hue='applicant_age_above_62',x='interest_rate',kind='kde',fill=True)
-st.title("Fair Lending Analysis App")
+st.title("Fair Lending Risk Assessment")
 
 # Create tabs
 tabs = ["Credit Risk Assesment - Individual Loan", "Credit Risk Assesment - Batch Upload", "Fair Lending - Early Warning"]
