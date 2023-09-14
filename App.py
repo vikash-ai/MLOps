@@ -70,7 +70,7 @@ Start by entering the loan attributes in the left side panel:
     st.subheader('User Input features')
     st.dataframe(input_df, hide_index=True)
     #st.write(input_df.reset_index(drop=True))
-    with open("C:/HMDA/Model/approval_pipeline_tuned.pkl", 'rb') as pfile:  
+    with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
                 load_clf=pickle.load(pfile)
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
@@ -105,7 +105,7 @@ def tab2_content():
     #@st.cache_data
     def load_model(pkl):
         return pickle.load(open(pkl, "rb"))
-    model = load_model("C:/HMDA/Model/approval_pipeline_tuned.pkl")
+    model = load_model("./approval_pipeline_tuned.pkl")
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
    # Apply the scaler to X_test
@@ -418,7 +418,7 @@ def tab3_content():
     if show_map:
         st.subheader("Redlining By Census tract")
         # Load the shapefile for Illinois
-        census_tract_shapefile = "C:/Users/vksch/Downloads/tl_2018_17_tract/tl_2018_17_tract.shp"
+        census_tract_shapefile = "./tl_2018_17_tract/tl_2018_17_tract.shp"
         il_shapefile = gpd.read_file(census_tract_shapefile)
         il_shapefile1 = pd.DataFrame(il_shapefile)
         il_shapefile1.GEOID = pd.to_numeric(il_shapefile1['GEOID'], errors='coerce')
