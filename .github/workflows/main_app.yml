@@ -1,0 +1,31 @@
+name: Docker Build and Deploy
+
+on:
+  push:
+    branches:
+      - main  # Adjust the branch as needed
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Login to Docker Hub
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      
+    - name: Build Docker image
+      run: |
+        docker build -t streamlit_mrm
+        docker images
+
+    - name: tag your image
+      run: docker tag streamlit_mrm vikash2020/streamlit_mrm
+
+    - name: Push Docker image to Docker Hub
+      run: docker push vikash2020/streamlit_mrm
+
+    - name: Run Docker container
+      run: docker run -d -p 8501:8501 vikash2020/streamlit_mrm:latest
