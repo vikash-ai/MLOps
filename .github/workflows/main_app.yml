@@ -28,4 +28,4 @@ jobs:
       run: docker push vikash2020/streamlit_mrm
 
     - name: Run Docker container
-      run: docker run -d -p 8501:8501 vikash2020/streamlit_mrm:latest
+      run: docker run -p 8501:8501 vikash2020/streamlit_mrm:latest
