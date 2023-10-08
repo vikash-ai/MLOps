@@ -13,6 +13,8 @@ import shap
 import folium
 from streamlit_folium import st_folium
 import geopandas as gpd
+import mlflow
+import mlflow.pyfunc
 
 
 # Define a custom SessionState class
@@ -70,22 +72,32 @@ Start by entering the loan attributes in the left side panel:
     st.subheader('User Input features')
     st.dataframe(input_df, hide_index=True)
     #st.write(input_df.reset_index(drop=True))
-    with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
-                load_clf=pickle.load(pfile)
+    # with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
+    #             load_clf=pickle.load(pfile)
+    # model_name = 'RF_tuned_model'
+    # model_version = 'latest'  # You can use 'latest' or a specific version number
+    mlflow.set_tracking_uri("http://127.0.0.1:5000/")
+    logged_model_uri = "mlflow-artifacts:/992808809450770313/44c6ebb3f044459e95ef2a917f23bbed/artifacts/RF_tuned_model"
+    load_clf = mlflow.sklearn.load_model(logged_model_uri)
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
     input_df = input_df.drop('Application No', axis=1)
     prediction = load_clf.predict(input_df)
     # st.write(input_df)
 
-    prediction_proba = load_clf.predict_proba(input_df)
-
+    #prediction_proba = load_clf.predict_proba(input_df)
+    # If the model supports predict_proba, use it
+    if hasattr(load_clf, 'predict_proba'):
+        prediction_proba = load_clf.predict_proba(input_df)
+        st.write("Class Probabilities:")
+        st.subheader('Prediction Probability')
+        st.write(prediction_proba)
     Approval_labels = np.array(['Rejected','Approved'])
     st.subheader('Model Prediction')
     st.write(Approval_labels[prediction])
 
-    st.subheader('Prediction Probability')
-    st.write(prediction_proba)
+    # st.subheader('Prediction Probability')
+    # st.write(prediction_proba)
     
     final_estimator = load_clf.named_steps['RF_tuned']
    # Apply the scaler to X_test
@@ -103,9 +115,12 @@ def tab2_content():
     # load pickle file
     # write as function so we can cache it
     #@st.cache_data
-    def load_model(pkl):
-        return pickle.load(open(pkl, "rb"))
-    model = load_model("./approval_pipeline_tuned.pkl")
+    # def load_model(pkl):
+    #     return pickle.load(open(pkl, "rb"))
+    # model = load_model("./approval_pipeline_tuned.pkl")
+    mlflow.set_tracking_uri("http://127.0.0.1:5000/")
+    logged_model_uri = "mlflow-artifacts:/992808809450770313/44c6ebb3f044459e95ef2a917f23bbed/artifacts/RF_tuned_model"
+    model = mlflow.sklearn.load_model(logged_model_uri)
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
    # Apply the scaler to X_test
@@ -396,20 +411,7 @@ def tab3_content():
         axes[1].grid(False)
         
         st.pyplot(fig5)
-        # Filter the data by each race class and create displots for APR within each class
-        # unique_races = X1['derived_race'].unique()
-        # for race in unique_races:
-        #     st.subheader(f"APR Distribution for Race: {race}")
-        #     race_data = X1[X1['derived_race'] == race]
-
-        #     # Create a displot for age
-        #     sns.set(style="whitegrid")
-        #     plt.figure(figsize=(8, 6))
-        #     sns.displot(data=race_data,x='interest_rate',kind='kde',fill=True)
-        #     #sns.histplot(data=race_data, x='interest_rate', kde=True, bins=10)
-        #     plt.xlabel("APR")
-        #     plt.ylabel("Frequency")
-        #     st.pyplot()
+        
     else:
     # You can add other content to the main section of the app
         st.stop()
