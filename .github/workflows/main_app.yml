@@ -35,7 +35,8 @@ jobs:
 
     - name: tag your image
       run: docker tag streamlit_mrm vikash2020/streamlit_mrm
-
+    - name: Wait for MLflow Tracking Server to Shut Down
+      run: sleep 10s
     - name: Push Docker image to Docker Hub
       run: docker push vikash2020/streamlit_mrm
 
