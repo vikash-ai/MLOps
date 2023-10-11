@@ -20,11 +20,11 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-    - name: Start MLflow Tracking Server
-      run: mlflow ui &
+    # - name: Start MLflow Tracking Server
+    #   run: mlflow ui &
 
-    - name: Wait for MLflow Tracking Server to Start
-      run: sleep 10s
+    # - name: Wait for MLflow Tracking Server to Start
+    #   run: sleep 10s
     - name: Login to Docker Hub
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
       
@@ -35,8 +35,8 @@ jobs:
 
     - name: tag your image
       run: docker tag streamlit_mrm vikash2020/streamlit_mrm
-    - name: Wait for MLflow Tracking Server to Shut Down
-      run: sleep 10s
+    # - name: Wait for MLflow Tracking Server to Shut Down
+    #   run: sleep 10s
     - name: Push Docker image to Docker Hub
       run: docker push vikash2020/streamlit_mrm
 
