@@ -77,11 +77,11 @@ Start by entering the loan attributes in the left side panel:
     # model_name = 'RF_tuned_model'
     # model_version = 'latest'  # You can use 'latest' or a specific version number
     mlflow.set_tracking_uri("http://127.0.0.1:5000/")
-    #logged_model_uri = "mlflow-artifacts:/992808809450770313/44c6ebb3f044459e95ef2a917f23bbed/artifacts/approval_pipe_RF_tuned"
-    client = MlflowClient()
-    run = client.get_run("44c6ebb3f044459e95ef2a917f23bbed")
-    base_uri = run.info.artifact_uri
-    logged_model_uri = f"{base_uri}/approval_pipe_RF_tuned"
+    logged_model_uri = "mlflow-artifacts:/992808809450770313/44c6ebb3f044459e95ef2a917f23bbed/artifacts/RF_tuned_model"
+    # client = MlflowClient()
+    # run = client.get_run("44c6ebb3f044459e95ef2a917f23bbed")
+    # base_uri = run.info.artifact_uri
+    # logged_model_uri = f"{base_uri}/approval_pipe_RF_tuned"
     load_clf = mlflow.sklearn.load_model(logged_model_uri)
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
