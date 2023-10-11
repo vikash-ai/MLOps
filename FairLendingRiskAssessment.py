@@ -77,7 +77,10 @@ Start by entering the loan attributes in the left side panel:
     # model_name = 'RF_tuned_model'
     # model_version = 'latest'  # You can use 'latest' or a specific version number
     mlflow.set_tracking_uri("http://127.0.0.1:5000/")
-    logged_model_uri = "mlflow-artifacts:/992808809450770313/44c6ebb3f044459e95ef2a917f23bbed/artifacts/RF_tuned_model"
+    run_id = "44c6ebb3f044459e95ef2a917f23bbed"
+    artifact_uri = mlflow.get_artifact_uri(run_id=run_id)
+    logged_model_uri = f"{artifact_uri}/RF_tuned_model"
+    # logged_model_uri = "mlflow-artifacts:/992808809450770313/44c6ebb3f044459e95ef2a917f23bbed/artifacts/RF_tuned_model"
     # client = MlflowClient()
     # run = client.get_run("44c6ebb3f044459e95ef2a917f23bbed")
     # base_uri = run.info.artifact_uri
