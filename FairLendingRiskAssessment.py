@@ -14,6 +14,7 @@ import folium
 from streamlit_folium import st_folium
 import geopandas as gpd
 import mlflow
+import mlflow.pyfunc
 from mlflow.tracking import MlflowClient
 
 
@@ -75,17 +76,17 @@ Start by entering the loan attributes in the left side panel:
     # with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
     #             load_clf=pickle.load(pfile)
     model_name = "approval_pipe_RF_tuned"
-    model_version = mlflow.get_latest_versions(model_name, stages=["Production"])[0].version
+    model_version = 1
     mlflow.set_tracking_uri("http://127.0.0.1:5000/")
     # run_id = "44c6ebb3f044459e95ef2a917f23bbed"
     # artifact_uri = mlflow.get_artifact_uri(run_id=run_id)
     # logged_model_uri = f"{artifact_uri}/RF_tuned_model"
-    logged_model_uri = f"runs:/44c6ebb3f044459e95ef2a917f23bbed/RF_tuned_model:{model_version}"
+    load_clf = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}/{model_version}")
     # client = MlflowClient()
     # run = client.get_run("44c6ebb3f044459e95ef2a917f23bbed")
     # base_uri = run.info.artifact_uri
     # logged_model_uri = f"{base_uri}/approval_pipe_RF_tuned"
-    load_clf = mlflow.sklearn.load_model(logged_model_uri)
+    #load_clf = mlflow.sklearn.load_model(logged_model_uri)
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
     input_df = input_df.drop('Application No', axis=1)
@@ -93,6 +94,7 @@ Start by entering the loan attributes in the left side panel:
     # st.write(input_df)
 
     #prediction_proba = load_clf.predict_proba(input_df)
+    load_clf = mlflow.sklearn.load_model(model_uri=f"models:/{model_name}/{model_version}")
     # If the model supports predict_proba, use it
     if hasattr(load_clf, 'predict_proba'):
         prediction_proba = load_clf.predict_proba(input_df)
@@ -125,9 +127,11 @@ def tab2_content():
     # def load_model(pkl):
     #     return pickle.load(open(pkl, "rb"))
     # model = load_model("./approval_pipeline_tuned.pkl")
+    model_name = "approval_pipe_RF_tuned"
+    model_version = 1
     mlflow.set_tracking_uri("http://127.0.0.1:5000/")
-    logged_model_uri = "mlflow-artifacts:/992808809450770313/44c6ebb3f044459e95ef2a917f23bbed/artifacts/RF_tuned_model"
-    model = mlflow.sklearn.load_model(logged_model_uri)
+    #logged_model_uri = mlflow.sklearn.load_model(model_uri=f"models:/{model_name}/{model_version}")
+    model = mlflow.sklearn.load_model(model_uri=f"models:/{model_name}/{model_version}")
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
    # Apply the scaler to X_test
