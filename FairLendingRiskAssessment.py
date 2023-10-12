@@ -81,7 +81,7 @@ Start by entering the loan attributes in the left side panel:
     # run_id = "44c6ebb3f044459e95ef2a917f23bbed"
     # artifact_uri = mlflow.get_artifact_uri(run_id=run_id)
     # logged_model_uri = f"{artifact_uri}/RF_tuned_model"
-    load_clf = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}/{model_version}")
+    load_clf = mlflow.pyfunc.load_model(model_uri=f"http://127.0.0.1:5000/{model_name}/{model_version}")
     # client = MlflowClient()
     # run = client.get_run("44c6ebb3f044459e95ef2a917f23bbed")
     # base_uri = run.info.artifact_uri
@@ -94,7 +94,7 @@ Start by entering the loan attributes in the left side panel:
     # st.write(input_df)
 
     #prediction_proba = load_clf.predict_proba(input_df)
-    load_clf = mlflow.sklearn.load_model(model_uri=f"models:/{model_name}/{model_version}")
+    load_clf = mlflow.sklearn.load_model(model_uri=f"http://127.0.0.1:5000/{model_name}/{model_version}")
     # If the model supports predict_proba, use it
     if hasattr(load_clf, 'predict_proba'):
         prediction_proba = load_clf.predict_proba(input_df)
