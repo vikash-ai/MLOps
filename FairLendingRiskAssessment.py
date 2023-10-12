@@ -78,10 +78,10 @@ Start by entering the loan attributes in the left side panel:
     model_name = "approval_pipe_RF_tuned"
     model_version = 1
     mlflow.set_tracking_uri("http://127.0.0.1:5000/")
-    # run_id = "44c6ebb3f044459e95ef2a917f23bbed"
+    run_id = "44c6ebb3f044459e95ef2a917f23bbed"
     # artifact_uri = mlflow.get_artifact_uri(run_id=run_id)
-    # logged_model_uri = f"{artifact_uri}/RF_tuned_model"
-    load_clf = mlflow.pyfunc.load_model(model_uri=f"http://127.0.0.1:5000/{model_name}/{model_version}")
+    logged_model_uri = f"mlflow-artifacts:/{run_id}/artifacts/{model_name}"
+    load_clf = mlflow.pyfunc.load_model(model_uri=logged_model_uri)
     # client = MlflowClient()
     # run = client.get_run("44c6ebb3f044459e95ef2a917f23bbed")
     # base_uri = run.info.artifact_uri
