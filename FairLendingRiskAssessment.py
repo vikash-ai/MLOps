@@ -77,7 +77,7 @@ Start by entering the loan attributes in the left side panel:
     #             load_clf=pickle.load(pfile)
     model_name = "RF_tuned_model"
     model_version = 1
-    mlflow.set_tracking_uri("http://127.0.0.1:5000/")
+    mlflow.set_tracking_uri("http://host.docker.internal:5000/")
     run_id = "44c6ebb3f044459e95ef2a917f23bbed"
     # artifact_uri = mlflow.get_artifact_uri(run_id=run_id)
     logged_model_uri = f"mlflow-artifacts:/{run_id}/artifacts/{model_name}"
