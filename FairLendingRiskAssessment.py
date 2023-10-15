@@ -95,7 +95,7 @@ Start by entering the loan attributes in the left side panel:
     # st.write(input_df)
 
     #prediction_proba = load_clf.predict_proba(input_df)
-    load_clf = mlflow.sklearn.load_model(model_uri=f"http://127.0.0.1:5000/{model_name}/{model_version}")
+    load_clf = mlflow.sklearn.load_model(model_uri=logged_model_uri)
     # If the model supports predict_proba, use it
     if hasattr(load_clf, 'predict_proba'):
         prediction_proba = load_clf.predict_proba(input_df)
