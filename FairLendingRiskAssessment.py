@@ -79,15 +79,10 @@ Start by entering the loan attributes in the left side panel:
     model_version = 1
     mlflow.set_tracking_uri("http://host.docker.internal:5000/")
     run_id = "44c6ebb3f044459e95ef2a917f23bbed"
-    # artifact_uri = mlflow.get_artifact_uri(run_id=run_id)
-    #mlflow-artifacts:/992808809450770313/44c6ebb3f044459e95ef2a917f23bbed/artifacts/RF_tuned_model
+    
     logged_model_uri = f"mlflow-artifacts:/992808809450770313/{run_id}/artifacts/{model_name}"
     load_clf = mlflow.pyfunc.load_model(model_uri=logged_model_uri)
-    # client = MlflowClient()
-    # run = client.get_run("44c6ebb3f044459e95ef2a917f23bbed")
-    # base_uri = run.info.artifact_uri
-    # logged_model_uri = f"{base_uri}/approval_pipe_RF_tuned"
-    #load_clf = mlflow.sklearn.load_model(logged_model_uri)
+    
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
     CATEGORICAL_VARIABLES = ['debt_to_income_ratio', 'loan_purpose']
     input_df = input_df.drop('Application No', axis=1)
@@ -127,11 +122,11 @@ def tab2_content():
     # def load_model(pkl):
     #     return pickle.load(open(pkl, "rb"))
     # model = load_model("./approval_pipeline_tuned.pkl")
-    model_name = "approval_pipe_RF_tuned"
-    model_version = 1
-    mlflow.set_tracking_uri("http://127.0.0.1:5000/")
-    #logged_model_uri = mlflow.sklearn.load_model(model_uri=f"models:/{model_name}/{model_version}")
-    model = mlflow.sklearn.load_model(model_uri=f"models:/{model_name}/{model_version}")
+    model_name = "RF_tuned_model"
+    mlflow.set_tracking_uri("http://host.docker.internal:5000/")
+    run_id = "44c6ebb3f044459e95ef2a917f23bbed"
+    logged_model_uri = f"mlflow-artifacts:/992808809450770313/{run_id}/artifacts/{model_name}"
+    model = mlflow.sklearn.load_model(model_uri=logged_model_uri)
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
    # Apply the scaler to X_test
