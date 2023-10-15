@@ -93,7 +93,6 @@ Start by entering the loan attributes in the left side panel:
     input_df = input_df.drop('Application No', axis=1)
     prediction = load_clf.predict(input_df)
     # st.write(input_df)
-
     #prediction_proba = load_clf.predict_proba(input_df)
     load_clf = mlflow.sklearn.load_model(model_uri=logged_model_uri)
     # If the model supports predict_proba, use it
