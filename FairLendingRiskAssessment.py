@@ -16,8 +16,9 @@ import geopandas as gpd
 import mlflow
 import mlflow.pyfunc
 from mlflow.tracking import MlflowClient
-
-
+#change this run id as per your final registered model id
+run_id = "44c6ebb3f044459e95ef2a917f23bbed"
+model_name = "RF_tuned_model"
 # Define a custom SessionState class
 class SessionState:
     def __init__(self, **kwargs):
@@ -75,10 +76,10 @@ Start by entering the loan attributes in the left side panel:
     #st.write(input_df.reset_index(drop=True))
     # with open("./approval_pipeline_tuned.pkl", 'rb') as pfile:  
     #             load_clf=pickle.load(pfile)
-    model_name = "RF_tuned_model"
-    model_version = 1
+    # model_name = "RF_tuned_model"
+    # model_version = 1
     #mlflow.set_tracking_uri("http://host.docker.internal:5000/")
-    run_id = "44c6ebb3f044459e95ef2a917f23bbed"
+    #run_id = "44c6ebb3f044459e95ef2a917f23bbed"
     
     logged_model_uri = f"mlflow-artifacts:/992808809450770313/{run_id}/artifacts/{model_name}"
     load_clf = mlflow.pyfunc.load_model(model_uri=logged_model_uri)
@@ -122,9 +123,9 @@ def tab2_content():
     # def load_model(pkl):
     #     return pickle.load(open(pkl, "rb"))
     # model = load_model("./approval_pipeline_tuned.pkl")
-    model_name = "RF_tuned_model"
-    mlflow.set_tracking_uri("http://host.docker.internal:5000/")
-    run_id = "44c6ebb3f044459e95ef2a917f23bbed"
+    # model_name = "RF_tuned_model"
+    # mlflow.set_tracking_uri("http://host.docker.internal:5000/")
+    # run_id = "44c6ebb3f044459e95ef2a917f23bbed"
     logged_model_uri = f"mlflow-artifacts:/992808809450770313/{run_id}/artifacts/{model_name}"
     model = mlflow.sklearn.load_model(model_uri=logged_model_uri)
     # Extract the final estimator from the pipeline
