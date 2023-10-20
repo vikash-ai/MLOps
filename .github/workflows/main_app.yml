@@ -43,4 +43,14 @@ jobs:
     - name: Run Docker container
       run: |
         docker run -d -p 8501:8501 vikash2020/streamlit_mrm:latest
-        sleep 10s
+    - name: Wait for the Streamlit app to start
+      run: sleep 10s
+
+    - name: Check if the app is running
+      run: docker ps | grep vikash2020/streamlit_mrm
+
+    - name: Open the Streamlit app in the browser
+      run: |
+        # Get the IP address of the running container
+        CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -q))
+        echo "Streamlit app is available at http://$CONTAINER_IP:8501"
