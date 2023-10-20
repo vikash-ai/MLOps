@@ -25,5 +25,5 @@ EXPOSE 8501
 # During debugging, this entry point will be overridden.
 # For more information, please refer to https://aka.ms/vscode-docker-python-debug
 #ENTRYPOINT ["streamlit", "run", "FairLendingRiskAssessment.py", "--server.port=8501", "--server.address=0.0.0.0"]
-CMD ["streamlit", "run", "FairLendingRiskAssessment.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+CMD ["streamlit", "run", "FairLendingRiskAssessment.py", "--server.port", "8501"]
 
