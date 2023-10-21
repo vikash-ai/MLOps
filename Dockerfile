@@ -17,7 +17,7 @@ RUN pip install mlflow
 # Copy the contents of the local folder to the working directory in the container
 COPY . .
 
-EXPOSE $PORT
+#EXPOSE $PORT
 
 # To test the container, that it is still working
 # HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
