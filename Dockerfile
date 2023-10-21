@@ -7,6 +7,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
+# exposing default port for streamlit
+# heroku will ignore even if it's there
+EXPOSE 8501
+
 # Set the working directory to /MLOps-main
 WORKDIR /app
 
@@ -17,13 +21,11 @@ RUN pip install mlflow
 # Copy the contents of the local folder to the working directory in the container
 COPY . /app
 
-#EXPOSE $PORT
-
 # To test the container, that it is still working
 # HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
 # During debugging, this entry point will be overridden.
 # For more information, please refer to https://aka.ms/vscode-docker-python-debug
 #ENTRYPOINT ["streamlit", "run", "FairLendingRiskAssessment.py", "--server.port=8501", "--server.address=0.0.0.0"]
-CMD ["streamlit", "run", "FairLendingRiskAssessment.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
-
+#CMD ["streamlit", "run", "FairLendingRiskAssessment.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+CMD streamlit run FairLendingRiskAssessment.py --server.port $PORT
