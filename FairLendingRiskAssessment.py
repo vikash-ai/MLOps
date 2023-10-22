@@ -16,7 +16,8 @@ import geopandas as gpd
 import mlflow
 import mlflow.pyfunc
 from mlflow.tracking import MlflowClient
-
+#set mlflow tracking ui
+mlflow.set_tracking_uri("https://e0db-35-221-6-185.ngrok-free.app/")
 
 # Define a custom SessionState class
 class SessionState:
@@ -77,10 +78,10 @@ Start by entering the loan attributes in the left side panel:
     #             load_clf=pickle.load(pfile)
     model_name = "RF_tuned_model"
     model_version = 1
-    mlflow.set_tracking_uri("http://host.docker.internal:5000/")
-    run_id = "44c6ebb3f044459e95ef2a917f23bbed"
+    #mlflow.set_tracking_uri("http://host.docker.internal:5000/")
+    run_id = "ff10223c9c9342c8b69a94f359d4cb8c"
     
-    logged_model_uri = f"mlflow-artifacts:/992808809450770313/{run_id}/artifacts/{model_name}"
+    logged_model_uri = f"mlflow-artifacts:/164626913516337495/{run_id}/artifacts/{model_name}"
     load_clf = mlflow.pyfunc.load_model(model_uri=logged_model_uri)
     
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
@@ -123,9 +124,9 @@ def tab2_content():
     #     return pickle.load(open(pkl, "rb"))
     # model = load_model("./approval_pipeline_tuned.pkl")
     model_name = "RF_tuned_model"
-    mlflow.set_tracking_uri("http://host.docker.internal:5000/")
-    run_id = "44c6ebb3f044459e95ef2a917f23bbed"
-    logged_model_uri = f"mlflow-artifacts:/992808809450770313/{run_id}/artifacts/{model_name}"
+    #mlflow.set_tracking_uri("http://host.docker.internal:5000/")
+    run_id = "ff10223c9c9342c8b69a94f359d4cb8c"
+    logged_model_uri = f"mlflow-artifacts:/164626913516337495/{run_id}/artifacts/{model_name}"
     model = mlflow.sklearn.load_model(model_uri=logged_model_uri)
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
