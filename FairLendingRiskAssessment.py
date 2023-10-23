@@ -17,7 +17,7 @@ import mlflow
 import mlflow.pyfunc
 from mlflow.tracking import MlflowClient
 #set mlflow tracking ui
-mlflow.set_tracking_uri("https://e0db-35-221-6-185.ngrok-free.app/")
+mlflow.set_tracking_uri("https://224c-35-188-60-234.ngrok-free.app/")
 
 # Define a custom SessionState class
 class SessionState:
@@ -79,9 +79,9 @@ Start by entering the loan attributes in the left side panel:
     model_name = "RF_tuned_model"
     model_version = 1
     #mlflow.set_tracking_uri("http://host.docker.internal:5000/")
-    run_id = "ff10223c9c9342c8b69a94f359d4cb8c"
+    run_id = "4239057023dd4e5f90633c6f3bba4e2c"
     
-    logged_model_uri = f"mlflow-artifacts:/164626913516337495/{run_id}/artifacts/{model_name}"
+    logged_model_uri = f"mlflow-artifacts:/571442805878738451/{run_id}/artifacts/{model_name}"
     load_clf = mlflow.pyfunc.load_model(model_uri=logged_model_uri)
     
     NUMERICAL_VARIABLES = ['loan_amount', 'income','loan_term','property_value','applicant_credit_score_type']
@@ -125,8 +125,8 @@ def tab2_content():
     # model = load_model("./approval_pipeline_tuned.pkl")
     model_name = "RF_tuned_model"
     #mlflow.set_tracking_uri("http://host.docker.internal:5000/")
-    run_id = "ff10223c9c9342c8b69a94f359d4cb8c"
-    logged_model_uri = f"mlflow-artifacts:/164626913516337495/{run_id}/artifacts/{model_name}"
+    run_id = "4239057023dd4e5f90633c6f3bba4e2c"
+    logged_model_uri = f"mlflow-artifacts:/571442805878738451/{run_id}/artifacts/{model_name}"
     model = mlflow.sklearn.load_model(model_uri=logged_model_uri)
     # Extract the final estimator from the pipeline
     final_estimator = model.named_steps['RF_tuned']
